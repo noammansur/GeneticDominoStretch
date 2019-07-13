@@ -3,7 +3,7 @@ from random import randint, shuffle
 from itertools import izip
 
 from breeders import breed_naive, breed_longer
-from genetic_algorithm import DominoGeneticAlgorithm
+from genetic_algorithm_engine import DominoGeneticAlgorithm
 from objects import DominoTile, DominoStretch
 
 # Parameters
