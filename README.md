@@ -1,5 +1,7 @@
-# GeneticDominoStretch
+# Genetic Algorithm for Finding the Longest Domino Stretch
 Genetic algorithm implementation for finding the longest stretch of a given domino tiles list
+
+![alt text](https://i.ytimg.com/vi/GZhpHohvq2E/maxresdefault.jpg)
 
 Main Flow:
 it generates N random domino tiles and shuffles them. 
