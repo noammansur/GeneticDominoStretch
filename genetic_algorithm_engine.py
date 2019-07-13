@@ -4,13 +4,14 @@ from random import randint, shuffle
 import random
 
 from objects import DominoStretch
+from parallel import ParallelExecutor
 from utils import timing
 
 
 class DominoGeneticAlgorithm(object):
     
     def __init__(self, population_size, elite_size, mutation_rate, max_generations, breed_method,
-                 number_of_stretches_penalty, stretch_length_penalty):
+                 number_of_stretches_penalty, stretch_length_penalty, parallelism_level):
         self.population_size = population_size
         self.elite_size = elite_size
         self.mutation_rate = mutation_rate
@@ -18,7 +19,8 @@ class DominoGeneticAlgorithm(object):
         self.breed_method = breed_method
         self.number_of_stretches_penalty = number_of_stretches_penalty
         self.stretch_length_penalty = stretch_length_penalty
-        
+        self.parallelism_level = parallelism_level
+
     @timing
     def run_genetic_algorithm(self, input):
         """
@@ -70,17 +72,24 @@ class DominoGeneticAlgorithm(object):
         next_generation = self._mutate(children, mutation_rate)
         return current_generation[ranked_pop[0][0]], next_generation
 
-    def _initial_population(self, population_size, input):
+    @timing
+    def _initial_population(self, population_size, input_tiles):
         """
         Create randomly the initial population
         """
         population = []
 
         for i in range(population_size):
-            new_input = [copy.copy(tile) for tile in input]
+            new_input = [copy.copy(tile) for tile in input_tiles]
             shuffle(new_input)
             population.append(DominoStretch(new_input, engine=self))
         return population
+
+    @staticmethod
+    def _create_random_stretch(input_tiles, engine):
+        new_input = [copy.copy(tile) for tile in input_tiles]
+        shuffle(new_input)
+        return DominoStretch(new_input, engine=engine)
 
     def _rank_results(self, pop):
         """
@@ -121,15 +130,17 @@ class DominoGeneticAlgorithm(object):
         breeding of two parents from the mating pool
         """
         children = []
-        length = len(mating_pool) - elite_size
-        pool = random.sample(mating_pool, len(mating_pool))
+        children_to_breed = len(mating_pool) - elite_size
 
+        # Add the elite
         for i in range(0, elite_size):
             children.append(mating_pool[i])
 
-        for i in range(0, length):
-            child = breed_method(pool[i], pool[len(mating_pool) - i - 1], self)
-            children.append(child)
+        shuffle(mating_pool)
+        pool = random.sample(mating_pool, len(mating_pool))
+        breed_inputs = [(pool[i], pool[len(mating_pool) - i - 1], self) for i in range(children_to_breed)]
+        children.extend(ParallelExecutor(breed_method, breed_inputs, self.parallelism_level).execute())
+
         return children
 
     def _mutate(self, children, mutation_rate):

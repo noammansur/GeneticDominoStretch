@@ -7,19 +7,19 @@ from genetic_algorithm_engine import DominoGeneticAlgorithm
 from objects import DominoTile, DominoStretch
 
 # Parameters
-NUMBER_OF_TILES = 100
+NUMBER_OF_TILES = 200
 POP_SIZE = 200
 ELITE_SIZE = 20
 MUTATION_RATE = 0.01
-NUMBER_OF_GENERATIONS = 200
+NUMBER_OF_GENERATIONS = 2000
 
 # Optimization selection
 USE_LONGER_BREED_METHOD = True
+LEVEL_OF_PARALLELISM = 1
 
 # Penalties
 NUMBER_OF_STRETCHES_PENALTY = 10
 STRETCH_LENGTH_PENALTY = 10
-
 
 numbers = [randint(1, 6) for i in range(NUMBER_OF_TILES + 1)]
 domino_tiles = [DominoTile(x, y, i) for i, (x, y) in enumerate(izip(numbers, numbers[1:]))]
@@ -29,7 +29,8 @@ breed_method = breed_longer if USE_LONGER_BREED_METHOD else breed_naive
 engine = DominoGeneticAlgorithm(
     population_size=POP_SIZE, elite_size=ELITE_SIZE, mutation_rate=MUTATION_RATE,
     max_generations=NUMBER_OF_GENERATIONS, breed_method=breed_method,
-    number_of_stretches_penalty=NUMBER_OF_STRETCHES_PENALTY, stretch_length_penalty=STRETCH_LENGTH_PENALTY)
+    number_of_stretches_penalty=NUMBER_OF_STRETCHES_PENALTY, stretch_length_penalty=STRETCH_LENGTH_PENALTY,
+    parallelism_level=LEVEL_OF_PARALLELISM)
 
 solution_stretch = DominoStretch(domino_tiles, engine)
 print('Expected Solution: {}'.format(solution_stretch))
