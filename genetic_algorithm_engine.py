@@ -2,6 +2,7 @@ import copy
 
 from random import randint, shuffle
 import random
+import logging
 
 from objects import DominoStretch
 from parallel import ParallelExecutor
@@ -49,10 +50,11 @@ class DominoGeneticAlgorithm(object):
                 # In case we didn't improve in the round we multiply the mutation rate by two to
                 # kick us off the local minimum
                 mutation_rate = min(1.0, 2 * mutation_rate)
+                logging.debug('Mutation rate multiplied due to no progress')
             else:
                 mutation_rate = self.mutation_rate
 
-            print("Generation {} Ended, Current fitness: {}, Mutation rate {}".format(
+            logging.info("Generation {} Ended, Current fitness: {}, Mutation rate {}".format(
                     gen, best_solution.fitness, mutation_rate))
             last_solution_fitness = best_solution.fitness
             progress.append(last_solution_fitness)

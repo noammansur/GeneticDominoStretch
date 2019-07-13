@@ -1,10 +1,22 @@
 import matplotlib.pyplot as plt
 from random import randint, shuffle
 from itertools import izip
+import logging
 
 from breeders import breed_naive, breed_longer
 from genetic_algorithm_engine import DominoGeneticAlgorithm
 from objects import DominoTile, DominoStretch
+
+
+def init_loggers(show_debug=True):
+    if NO_LOGS:
+        return
+    logging.getLogger().setLevel(logging.INFO if not show_debug else logging.DEBUG)
+
+
+# Debug mode
+NO_LOGS = False
+DEBUG = False
 
 # Parameters
 NUMBER_OF_TILES = 200
@@ -38,6 +50,7 @@ print('Expected Solution: {}'.format(solution_stretch))
 shuffle(domino_tiles)
 print('==============================================\n')
 
+init_loggers(show_debug=DEBUG)
 converged, gen_count, progress, solution = engine.run_genetic_algorithm(input=domino_tiles)
 if converged:
     print('Converged in generation number %d' % gen_count)
